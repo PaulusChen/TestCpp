@@ -24,12 +24,7 @@ foreach(srcFile ${SRC_LIST})
   endif("${srcFile}" MATCHES "${TEST_REGEX_ST}")
 endforeach(srcFile)
 
-# Add subproject
-# add_subdirectory(thirdparty/gtest)
-
 # Compiling arguments
-include_directories(${PROJECT_THIRD_PARTY_DIR}/gtest/googletest/include/)
-link_directories(${PROJECT_THIRD_PARTY_DIR}/gtest/googlemock/gtest)
 add_definitions("-Wno-unused-result -std=c++11 -Wsign-compare -g -fwrapv -Wall")
 #add_definitions("-Wall -Xlinker -export-dynamic -fstack-protector-all")
 
@@ -51,6 +46,6 @@ endif (TestCpp_BUILD_SHARED_LIBS)
 
 
 # Make testing program.
-add_executable(testcpp ${Testcpp_SHARED_OR_STATIC} ${SRC_FILE})
-set(PUB_LIBRARIES libgtest.a pthread dl util m)
-target_link_libraries(TestCpp ${PUB_LIBRARIES})
+add_executable(testcpp ${SRC_FILE})
+set(PUB_LIBRARIES pthread dl util m)
+target_link_libraries(testcpp ${PUB_LIBRARIES})

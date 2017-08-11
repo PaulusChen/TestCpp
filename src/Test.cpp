@@ -5,12 +5,6 @@
 
 using namespace std;
 
-constexpr int TestFun(int testval);
-
-constexpr int TestFun(int testval) {
-    return testval * 2;
-}
-
 class TestClass
 {
  public:
@@ -51,6 +45,12 @@ class TestMinusClass : public TestClass
 
 int TestMinusClass::TestFunc(int a, int b) { return a - b; }
 
+constexpr int TestFun(int testval);
+
+constexpr int TestFun(int testval) {
+    return testval * 2;
+}
+
 constexpr int TestVal = TestFun(2);
 
 int *TestScanBuild() {
@@ -58,7 +58,8 @@ int *TestScanBuild() {
     return &testVal;
 }
 
-int main(int argc, char *argv[]) {
+
+void TestVTab() {
     int reval = TestFun(TestVal);
 
     TestClass *pPlus1 = new TestPlusClass(0x11111111);
@@ -78,6 +79,9 @@ int main(int argc, char *argv[]) {
     cout<<"a minus b equel : "<<pMinus->TestFunc(a,b)<<endl;
     cout<<*TestScanBuild()<<endl;
 
+}
+
+int main(int argc, char *argv[]) {
     return 0;
 }
 
