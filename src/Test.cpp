@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <vector>
+#include <typeinfo>
 
 using namespace std;
 
@@ -83,17 +84,49 @@ void TestVTab() {
 
 }
 
+template <typename T>
+class TestUsing
+{
+    typedef T type_name;
+   public:
+    T add(T a, T b) { return a + b; }
+};
+
+template <typename T>
+using NewName = TestUsing<T>;
+
+typedef TestUsing<int> NewName2;
+
+// template <typename T>
+// typedef TestUsing<T> NewName2;
+
+// template <typename T>
+// typedef add<T> NewNameOfAdd2;
+
 void user(const vector<int> &vi)
 {
     constexpr int bufmax = 1024;
-    char buffer2[bufmax];
-    alignas(int) char buffer[bufmax];
-    auto ai = alignof(buffer);
+    char buffer1[bufmax];
+    alignas(int) char buffer2[bufmax];
+    alignas(8) char buffer3[bufmax];
+    // alignas(3) char buffer3[bufmax];
+
+    auto ai1 = alignof(buffer1);
     auto ai2 = alignof(buffer2);
-    cout<<"alignof(buffer) : "<<ai<<" buffer addr : "<<ios_base::hex<<buffer<<" alignof(buffer2) : "<<static_cast<uint64_t>(ai2)<<" buffer2 addr : "<<ios_base::hex<<buffer2<<endl;
+    auto ai3 = alignof(buffer3);
+
+
+    cout<<"alignof(buffer) : "<<ai1<<endl
+        <<"and ai type is : "<<typeid(ai1).name()<<endl
+        <<"buffer addr : 0x"<<ios_base::hex<<reinterpret_cast<uint64_t>(buffer1)<<endl
+        <<"alignof(buffer2) : "<<ai2<<endl
+        <<"buffer2 addr : 0x"<<ios_base::hex<<reinterpret_cast<uint64_t>(buffer2)<<endl
+        <<"type name int : "<<typeid(bufmax).name()<<endl;
 
     const int max = min(vi.size(), bufmax / sizeof(int));
-    uninitialized_copy(vi.begin(), vi.begin() + max, buffer);
+    uninitialized_copy(vi.begin(), vi.begin() + max, buffer1);
+
+    using testtype = unsigned int;
 }
 
 int main(int argc, char *argv[]) {
