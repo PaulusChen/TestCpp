@@ -211,7 +211,8 @@ int testArrayParam(uint8_t ta[100]) {
     // sizeof(ta) in fun:8 typeid(ta):Ph
     return ta[0];
 }
-int main(int argc, char *argv[]) {
+
+int testStr() {
     uint8_t testArray[100];
     uint8_t testArray2[100];
     // testArray2 = testArray; // error: invalid array assignment
@@ -244,4 +245,40 @@ int main(int argc, char *argv[]) {
     const wchar_t *testw = L"testw";
     // const char16_t *testwc16 = testw; // error: cannot convert ‘const wchar_t*’ to ‘const char16_t*’ in initialization
 
+    char testA[] = "abcd";
+    3[testA] = 'f';
+    cout<<testA<<endl;
+}
+
+void testArray2(int (*pArray)[3]) { return ; }
+void testArray3(int **pArray) { return; }
+int testArray1() {
+    int testAA[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}; //这里数组间都插入了4个字节的缝隙，对齐到了16字节，不知道具体原因
+    int testPA1[] = {1, 2, 3};
+    int testPA2[] = {4, 5, 6};
+    int testPA3[] = {7, 8, 9};
+    int *testPA[] = { testPA1, testPA2, testPA3 };
+
+    testArray2(testAA);
+    // testArray3(testAA); // error: cannot convert ‘int (*)[3]’ to ‘int**’ for argument ‘1’ to ‘void testArray3(int**)’
+    // testArray2(testPA); // error: cannot convert ‘int**’ to ‘int (*)[3]’ for argument ‘1’ to ‘void testArray2(int (*)[3])’
+    testArray3(testPA);
+
+    cout<<"dump testAA[i]"<<endl;
+    for (int i = 0; i != 3; ++i)
+        cout<<" i : "<<i<<" val : "<<*testAA[i]<<endl;
+
+    cout<<"dump testPA[i]"<<endl;
+    for (int i = 0; i != 3; ++i)
+        cout << "i : " << i << " val : " << testPA[i] << endl;
+
+    cout<<"dump testPA"<<endl;
+    for (int i = 0; i != 3; ++i)
+        for (int j = 0; j != 3; ++j)
+            cout<<"i : "<<i<<" j : "<<j<<" val : "<<testPA[i][j]<<endl;
+}
+
+int main(int argc, char *argv[]) {
+
+    testArray1();
 }
