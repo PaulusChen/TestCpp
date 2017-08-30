@@ -278,7 +278,143 @@ int testArray1() {
             cout<<"i : "<<i<<" j : "<<j<<" val : "<<testPA[i][j]<<endl;
 }
 
-int main(int argc, char *argv[]) {
+int testArray() {
+    int test[2][3];
+    // int *p = test; // error: cannot convert ‘int (*)[3]’ to ‘int*’ in initialization
+    int *p = test[0];
+    p[3*1+2] = 1; // test[1][2];
+    cout<<test[1][2]<<endl;
+    // const int a; // error: uninitialized const ‘a’ [-fpermissive]
+
+    int a = 100;
+    int *pa = &a;
+    const int *pa1 = &a;
+    // *pa1 = 200; // error: assignment of read-only location ‘* pa1’
+    int const *pa2 = &a;
+    // *pa2 = 300; // error: assignment of read-only location ‘* pa2’
+    pa2 = pa;
+    int *const pa3 = &a;
+    *pa3 = 400;
+    // pa3 = pa; // error: assignment of read-only variable ‘pa3’
 
     testArray1();
 }
+
+int testReference() {
+    const int &a = 1.0;
+    // const int &a{1.0}; // error: narrowing conversion of ‘1.0e+0’ from ‘double’ to ‘int’ inside { } [-Wnarrowing]
+    const int *p = &a;
+    cout<<p<<endl;
+}
+
+
+template<typename T>
+void swap(T &a, T&b) {
+    T tmp{a};
+    a = b;
+    b = tmp;
+}
+
+template<typename T>
+void new_swap(T &a, T&b) {
+    T tmp{static_cast<T&&>(a)};
+    a = static_cast<T&&>(b);
+    b = static_cast<T&&>(tmp);
+}
+
+string f() {}
+int testReference2() {
+    string var;
+    string &r1{var};
+    // string &r2{f()}; // error: invalid initialization of non-const reference of type ‘@#$’ from an rvalue of type ‘#$%#’
+    // string &r3{"test_string"}; // error: invalid initialization of non-const reference of type ‘@#$’ from an rvalue of type ‘#$%#’
+
+    // string &&rr1{var}; // error: cannot bind ‘#$%$’ lvalue to ‘$%#’
+    string &&rr2{f()};
+    string &&rr3{"test_string"};
+
+    const string &&rr4{f()};
+    //new_swap(var,string("123")); // error: invalid initialization of non-const reference of type ‘@#$’ from an rvalue of type ‘@#$@’
+}
+
+// int operate+(const int &a,const int &b) {
+//     return a + b;
+// }
+
+class TestOperator {
+public:
+    int a;
+};
+
+
+
+// static TestOperator&& operator+(const TestOperator *a, const TestOperator *b) // error: ‘TestOperator&& operator+(const TestOperator*, const TestOperator*)’ must have an argument of class or enumerated type
+// { return Testperator(); }
+
+// static int operator+(int a, int b) { // error: ‘int operator+(int, int)’ must have an argument of class or enumerated type
+//     return a+b;
+// }
+
+struct S0 {};
+struct S1 {int a;};
+struct S2 {int a; S2(int aa):a(aa){}}; // 不是默认构造函数
+struct S3 {int a; S3(int aa):a(aa){} S3(){}}; //是ＰＯＤ用户自定义默认构造函数
+struct S4 {int a; S4(int aa):a(aa){} S4()=default;};
+struct S5 {virtual void f();}; //虚函数
+struct S6:S1{};
+struct S7:S0{int b;};
+struct S8:S1{int b;}; //不是ＰＯＤ数据既属于Ｓ１也属于Ｓ８
+struct S9:S0,S1 {};
+struct S10 {int a;int b; S10(int b,int a):a(a),b(b){}};
+void S5::f() {}
+template<typename T>
+void PrintPODType() {
+    if (is_pod<T>::value)
+        cout<<typeid(T).name()<<" is POD"<<endl;
+    else
+        cout<<typeid(T).name()<<" is *NOT* POD"<<endl;
+}
+
+void PODTest() {
+    PrintPODType<S0>();
+    PrintPODType<S1>();
+    PrintPODType<S2>();
+    PrintPODType<S3>();
+    PrintPODType<S4>();
+    PrintPODType<S5>();
+    PrintPODType<S6>();
+    PrintPODType<S7>();
+    PrintPODType<S8>();
+    PrintPODType<S9>();
+    PrintPODType<S10>();
+}
+
+struct PPN {
+    unsigned int PFN : 22;
+    int : 3;
+    unsigned int CCA : 3;
+    bool nonreachable : 1;
+    bool dirty : 1;
+    bool valid : 1;
+    bool global : 1;
+};
+
+void bitareaTest1() {
+    PPN ppn{};
+    ppn.dirty = 1;
+}
+
+
+union U1 {
+    int a;
+    const char *p{""};
+    int test() {return this->a;}
+};
+
+int main(int argc, char *argv[]) {
+    U1 u1;
+    cout<<u1.test()<<endl; // 打印ｐ指向的地址
+    // U1 u2{7}; //error: no matching function for call to ‘U1::U1(<brace-enclosed initializer list>)’
+}
+
+
