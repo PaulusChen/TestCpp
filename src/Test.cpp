@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <vector>
 #include <typeinfo>
+#include <iterator>
 #include <cstring>
+#include <iomanip>
 
 using namespace std;
 
@@ -411,10 +413,207 @@ union U1 {
     int test() {return this->a;}
 };
 
-int main(int argc, char *argv[]) {
+void unionTest() {
     U1 u1;
     cout<<u1.test()<<endl; // 打印ｐ指向的地址
     // U1 u2{7}; //error: no matching function for call to ‘U1::U1(<brace-enclosed initializer list>)’
 }
 
+namespace enum_class
+{
+enum class Light : uint8_t;
+uint8_t ReadVal(Light &flag) { return static_cast<uint8_t>(flag); }
+enum class Light : uint8_t
+{
+    Red,
+    Green,
+    Yellow
+};
+enum class Flag : uint8_t
+{
+    Nil = 0,
+    Red = 1,
+    Yellow = 2,
+    Blue = 4
+};
+constexpr Flag operator&(Flag var, Flag flag)
+{  // if(f1 & Flag::Red) { //error: could not convert ‘operator&(f1, (Flag)1u)’
+    // from ‘Flag’ to ‘bool’
+    return static_cast<Flag>(static_cast<char>(var) & static_cast<char>(flag));
+}
+constexpr Flag operator|(Flag var, Flag flag)
+{
+    return static_cast<Flag>(static_cast<char>(var) | static_cast<char>(flag));
+}
 
+int test()
+{
+    // Light s1 = 1; // error: cannot convert ‘int’ to ‘Light’ in initialization
+    // uint8_t i1 = s1; // error: cannot convert ‘Light’ to ‘uint8_t {aka
+    // unsigned char}’ in initialization
+    // uint8_t i2 = Light::Red; // error: cannot convert ‘Light’ to ‘uint8_t
+    // {aka unsigned char}’ in initialization
+    // Light S2 = Red; // error: ‘Red’ was not declared in this scope
+    Light S3 = Light::Red;
+    // if (S3 == Flag::Red); // error: no match for ‘operator==’ (operand types
+    // are ‘Light’ and ‘Flag’)
+    if (S3 == Light::Red)
+        ;
+    Flag f1 = Flag::Red | Flag::Blue;
+    if ((f1 & Flag::Red) != Flag::Nil)
+    {
+        cout << "f1 has Red" << endl;
+    }
+    switch (f1)
+    {  // warning: enumeration value ‘Blue’ not handled in switch [-Wswitch]
+        case Flag::Red:
+            cout << "Red" << endl;
+        case Flag::Yellow:
+            cout << "Yellow" << endl;
+        case Flag::Red &Flag::Yellow:
+            cout << "Red&Yellow" << endl;
+    }
+    Flag f2{};
+    cout << "f2: " << (int)static_cast<uint8_t>(f2) << endl;
+    f2 = static_cast<Flag>(1234);  //超出范围
+    cout << "f2: " << (int)static_cast<uint8_t>(f2) << endl;
+}
+}
+
+
+enum Light : uint8_t;
+uint8_t ReadVal(Light &flag) {
+    return static_cast<uint8_t>(flag);
+}
+enum Light: uint8_t { Red, Green, Yellow };
+enum Flag : uint8_t {
+    Nil = 0,
+    // Red = 1, // error: redeclaration of ‘Red’
+    FlagRed = 1,
+    FlagYellow = 2, // error: redeclaration of ‘Yellow’
+    Blue = 4
+};
+
+
+// enum TestEnum1;  // error: use of enum ‘TestEnum’ without previous declaration
+// enum TestEnum1 { TestEnumA,TestEnumB };
+enum class TestEnum2;
+enum class TestEnum2 { TestEnumA,TestEnumB };
+
+constexpr Flag operator&(Flag var, Flag flag) { // if(f1 & Flag::Red) { //error: could not convert ‘operator&(f1, (Flag)1u)’ from ‘Flag’ to ‘bool’
+    return static_cast<Flag>(static_cast<char>(var)&static_cast<char>(flag));
+}
+constexpr Flag operator|(Flag var, Flag flag) {
+    return static_cast<Flag>(static_cast<char>(var)|static_cast<char>(flag));
+}
+
+
+class TestInit { public: TestInit() { cout<<"test init"<<endl; } };
+int testinit() {
+    TestInit testobj;
+    return 1;
+}
+static int a = testinit();
+
+int testenum() {
+    // Light s1 = 1; // error: invalid conversion from ‘int’ to ‘Light’ [-fpermissive]
+    Light s1;
+    // s1 = 1; // error: invalid conversion from ‘int’ to ‘Light’ [-fpermissive]
+    uint8_t i2 = Light::Red;
+    Light S2 = Red;
+    uint8_t i1 = S2;
+    Light S3 = Light::Red;
+    // if (S3 == Flag::Red); // error: ‘Red’ is not a member of ‘Flag’
+    if (S3 == Light::Red);
+    Flag f1 = Flag::FlagRed | Flag::Blue;
+    if((f1 & Flag::FlagRed) != Flag::Nil) {
+        cout<<"f1 has Red"<<endl;
+    }
+    switch(f1) { // warning: enumeration value ‘Blue’ not handled in switch [-Wswitch]
+    case Flag::FlagRed:
+        cout<<"Red"<<endl;
+    case Flag::FlagYellow:
+        cout<<"Yellow"<<endl;
+    case Flag::FlagRed&Flag::FlagYellow:
+        cout<<"Red&Yellow"<<endl;
+    }
+    Flag f2 {};
+    cout<<"f2: "<<(int)static_cast<uint8_t>(f2)<<endl;
+    f2 = static_cast<Flag>(1234); //超出范围
+    cout<<"f2: "<<(int)static_cast<uint8_t>(f2)<<endl;
+}
+
+constexpr int testconstfun(int v) {return v+1;}
+int test_switch() {
+    constexpr int testval = 2;
+    int a = 1;
+    switch (a)
+        {
+        case 1:
+            cout<<"1"<<endl; break;
+        case testval:
+            cout<<"2"<<endl; break;
+        case testconstfun(testval):
+            cout<<"3"<<endl; break;
+            // case testconstfun(testval): // error: duplicate case value
+            //     cout<<"can not"<<endl; break;
+        }
+
+    // double d = 1.0;
+    // switch (d) { // error: switch quantity not an integer
+    // case 1.0: // error: could not convert ‘1.0e+0’ from ‘double’ to ‘<type error>’
+    //         cout<<"1.0"<<endl; break;
+    // }
+
+    int x = 1;
+    switch (x) {
+    case 3:
+        {
+            int zz = 1;
+        }
+    case 1:
+        int y;
+        // int z = 1; // error: jump to case label [-fpermissive]  note:   crosses initialization of ‘int z’
+    case 2:
+        cout<<"Y:"<<y<<endl;
+    }
+
+}
+
+int get_val(int a) {
+    return a + 1;
+}
+
+int testif() {
+    if (int a = get_val(1)) {
+        cout<<"a in if: "<<a<<endl;
+    } else {
+        cout<<"a in else: "<<a<<endl;
+    }
+}
+
+int testforeach() {
+    vector<int> testvec{1,2,3,4,5,6,7,8,9};
+    for(const int &v:testvec) {
+        cout<<v<<endl;
+    }
+}
+
+int main(int argc, char *argv[]) {
+    vector<int> testvec{1,2,3,4,5,6,7,8,9};
+    cout<<"++++++++++1+++++++++++++"<<endl;
+    for(const int &v:testvec) { cout<<v<<endl; }
+
+    cout<<"++++++++++2+++++++++++++"<<endl;
+    for(auto i = begin(testvec); i != end(testvec); ++i) { cout<<*i<<endl; }
+
+    cout<<"++++++++++3+++++++++++++"<<endl;
+    {
+        auto i = begin(testvec);
+        while (i != end(testvec))
+        {
+            cout << *i << endl;
+            ++i;
+        }
+    }
+}
