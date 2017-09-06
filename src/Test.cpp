@@ -599,7 +599,7 @@ int testforeach() {
     }
 }
 
-int main(int argc, char *argv[]) {
+int testfor() {
     vector<int> testvec{1,2,3,4,5,6,7,8,9};
     cout<<"++++++++++1+++++++++++++"<<endl;
     for(const int &v:testvec) { cout<<v<<endl; }
@@ -611,9 +611,25 @@ int main(int argc, char *argv[]) {
     {
         auto i = begin(testvec);
         while (i != end(testvec))
-        {
-            cout << *i << endl;
-            ++i;
-        }
+            {
+                cout << *i << endl;
+                ++i;
+            }
+    }
+
+    for (;;) {
+        cout<<1;
     }
 }
+
+int main(int argc, char *argv[]) {
+    bool a = true;
+    bool b = false;
+
+    if (a or b) {
+        cout<<"true a or b"<<endl;
+    }
+}
+
+
+
