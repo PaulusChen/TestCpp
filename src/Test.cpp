@@ -622,13 +622,39 @@ int testfor() {
     }
 }
 
-int main(int argc, char *argv[]) {
+int testopt() {
     bool a = true;
     bool b = false;
 
     if (a or b) {
         cout<<"true a or b"<<endl;
     }
+}
+
+void testopt2() {
+    int x,y;
+    int j = x = y;
+    int *p = &++x;
+    //int *q = &(x++); //error: lvalue required as unary ‘&’ operand x++返回的是++之前的临时变量，不是左值
+    int *p2 = &(x>y?x:y);
+    //int &r = (x<y)?x:1; //error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘int’ 1不是左值
+}
+
+int main(int argc, char *argv[]) {
+    int IS_A = 1<<0;
+    int IS_B = 1<<1;
+    int IS_C = 1<<2;
+
+    int flag = IS_A|IS_B;
+
+    //is support A?
+    if (flag & IS_A) {
+        cout<<"Support A"<<endl;
+    }
+    if (flag & IS_C) {
+        cout<<"Support C"<<endl;
+    }
+
 }
 
 
