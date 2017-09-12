@@ -687,12 +687,23 @@ constexpr char c = ps1[2];
 
 int main(int argc, char *argv[]) {
     signed char sc = 1023;
+    //cout<<(int)sc<<endl;
 
     double testd = 0.1234567890123456;
     float testf = testd;
-    //cout<<(int)sc<<endl;
-    cout<<setprecision(16)<<testd<<endl;
-    cout<<setprecision(16)<<testf<<endl;
+    cout<<setprecision(16)<<testd<<endl; // 0.1234567890123456
+    cout<<setprecision(16)<<testf<<endl; // 0.1234567910432816
+
+    testd = 0.1234567810123456;
+    testf = testd;
+    cout<<setprecision(16)<<testd<<endl; // 0.1234567810123456
+    cout<<setprecision(16)<<testf<<endl; // 0.123456783592701
+
+
+    testd = 1E300;
+    testf = testd;
+    cout<<testd<<endl;
+    cout<<testf<<endl;
 }
 
 
