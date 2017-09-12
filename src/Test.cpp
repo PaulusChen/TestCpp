@@ -7,6 +7,7 @@
 #include <iterator>
 #include <cstring>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
@@ -640,21 +641,58 @@ void testopt2() {
     //int &r = (x<y)?x:1; //error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘int’ 1不是左值
 }
 
+
+constexpr int isqrt_helper(int sq, int d, int a) { return sq <= a ? isqrt_helper(sq+d,d+2,a):d; }
+constexpr int isqrt(int x) { return isqrt_helper(1,3,x)/2 - 1; }
+
+struct Point {
+    int x,y,z;
+    constexpr Point (int px, int py) : x(px),y(py), z(0) { }
+    // constexpr Point (int px, int py) : x(px),y(py) { } // error: member ‘Point::z’ must be initialized by mem-initializer in ‘constexpr’ constructor
+    constexpr Point (int px, int py, int pz) : x(px),y(py),z(pz) { }
+    constexpr Point up(int d) { return {x,y,z+d}; }
+    constexpr Point move(int dx,int dy) { // There need not 'const'
+        // this->x += 100; //error: assignment of member ‘Point::x’ in read-only object
+        return {x+dx, y+dy, z};
+    }
+};
+
+constexpr Point origo { 0, 0 };
+constexpr int z = origo.x;
+constexpr Point constarry[] = { origo,Point{1,1},Point{2,2},origo.move(1,2) };
+
+int squareF(int x) { return x * x; }
+
+constexpr int x = constarry[1].x;
+// constexpr Point xy{1,squareF(4)}; // error: call to non-constexpr function ‘int squareF(int)’
+
+constexpr int square(int x) { return x*x; }
+constexpr int radial_distance(Point p) {
+    return isqrt(square(p.x) + square(p.y) + square(p.z));
+}
+
+constexpr Point p1 {10,20,30};
+constexpr Point p2 {p1.up(20)};
+constexpr int dist = radial_distance(p2);
+
+void testconexpr() {
+    const Point testpoint { 10,20,30 };
+    testpoint.move(100,200);
+}
+
+constexpr const char* ps1 = "1234";
+constexpr const char* ps2 = ps1;
+constexpr const char* ps3 = ps1 + 2;
+constexpr char c = ps1[2];
+
 int main(int argc, char *argv[]) {
-    int IS_A = 1<<0;
-    int IS_B = 1<<1;
-    int IS_C = 1<<2;
+    signed char sc = 1023;
 
-    int flag = IS_A|IS_B;
-
-    //is support A?
-    if (flag & IS_A) {
-        cout<<"Support A"<<endl;
-    }
-    if (flag & IS_C) {
-        cout<<"Support C"<<endl;
-    }
-
+    double testd = 0.1234567890123456;
+    float testf = testd;
+    //cout<<(int)sc<<endl;
+    cout<<setprecision(16)<<testd<<endl;
+    cout<<setprecision(16)<<testf<<endl;
 }
 
 
