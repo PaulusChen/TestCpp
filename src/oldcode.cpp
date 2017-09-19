@@ -651,8 +651,8 @@ namespace test_part1 {
         constexpr Point (int px, int py) : x(px),y(py), z(0) { }
         // constexpr Point (int px, int py) : x(px),y(py) { } // error: member ‘Point::z’ must be initialized by mem-initializer in ‘constexpr’ constructor
         constexpr Point (int px, int py, int pz) : x(px),y(py),z(pz) { }
-        constexpr Point up(int d) { return {x,y,z+d}; }
-        constexpr Point move(int dx,int dy) { // There need not 'const'
+        constexpr Point up(int d) const { return {x,y,z+d}; }
+        constexpr Point movexy(int dx,int dy) const { // There need not 'const'
             // this->x += 100; //error: assignment of member ‘Point::x’ in read-only object
             return {x+dx, y+dy, z};
         }
@@ -660,7 +660,7 @@ namespace test_part1 {
 
     constexpr Point origo { 0, 0 };
     constexpr int z = origo.x;
-    constexpr Point constarry[] = { origo,Point{1,1},Point{2,2},origo.move(1,2) };
+    constexpr Point constarry[] = { origo,Point{1,1},Point{2,2},origo.movexy(1,2) };
 
     int squareF(int x) { return x * x; }
 
@@ -678,7 +678,7 @@ namespace test_part1 {
 
     void testconexpr() {
         const Point testpoint { 10,20,30 };
-        testpoint.move(100,200);
+        testpoint.movexy(100,200);
     }
 
     constexpr const char* ps1 = "1234";
