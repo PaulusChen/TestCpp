@@ -685,7 +685,7 @@ constexpr const char* ps2 = ps1;
 constexpr const char* ps3 = ps1 + 2;
 constexpr char c = ps1[2];
 
-int main(int argc, char *argv[]) {
+int convertionTest() {
     signed char sc = 1023;
     //cout<<(int)sc<<endl;
 
@@ -704,6 +704,42 @@ int main(int argc, char *argv[]) {
     testf = testd;
     cout<<testd<<endl;
     cout<<testf<<endl;
+}
+
+
+class TestA {
+public:
+    int a;
+    TestA() : a{0} {
+    }
+};
+
+
+enum class AllocatorType{
+    AllocatorX,
+    AllocatorY
+};
+
+void *operator new(size_t s,AllocatorType at) {
+    cout<<"alloc from "<<(int)(at)<<endl;
+    malloc(s);
+}
+
+void operator delete(void *p,AllocatorType at) {
+        cout<<"free from "<<(int)(at)<<endl;
+    free(p);
+}
+
+
+int main(int argc, char *argv[]) {
+    TestA *a = new TestA();
+    TestA *b = new TestA;
+
+    int *d = new int();
+    int *c = new int;
+
+    int *x = new(AllocatorType::AllocatorY) int;
+    delete(AllocatorType::AllocatorY) x;
 }
 
 
