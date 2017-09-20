@@ -25,7 +25,7 @@ foreach(srcFile ${SRC_LIST})
 endforeach(srcFile)
 
 # Compiling arguments
-add_definitions("-Wno-unused-result -std=c++11 -Wsign-compare -g -fwrapv -Wall")
+add_definitions("-Wno-unused-result -std=c++14 -Wsign-compare -g -fwrapv -Wall")
 #add_definitions("-Wall -Xlinker -export-dynamic -fstack-protector-all")
 
 # Make libtestcpp.so or libtestcpp.a
