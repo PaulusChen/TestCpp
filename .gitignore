@@ -42,6 +42,9 @@ SysLocLibInclude
 thirdparty
 bin
 build
+.projectile
+include_cpp
+include_sys
 
 # for gtags
 GPATH
