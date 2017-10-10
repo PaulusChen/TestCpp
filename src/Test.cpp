@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <type_traits>
+#include <new>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ void convertTest() {
 
 struct BadClass {
     BadClass() { throw std::runtime_error(""); }
+    ~BadClass() { throw std::runtime_error(""); }
 };
 
 enum class AllocatorType { AllocatorX,AllocatorY };
@@ -41,14 +43,10 @@ void operator delete(void *p, AllocatorType type) {
     free(p);
 }
 
-using INT32 = uint32_t;
-
-int main(int argc, char *argv[]) {
-    INT32 reval = 0;
+void OperatorNewOverload() {
     try {
         BadClass *a = new(AllocatorType::AllocatorY) BadClass;
     } catch (const std::exception &) { }
-
 
     int *i = new(AllocatorType::AllocatorY) int;
     delete i;
@@ -56,8 +54,46 @@ int main(int argc, char *argv[]) {
       Single stepping until exit from function _ZdlPv@plt,
       which has no line number information.
       0x00000000004044f0 in ?? ()
-     */
-
+    */
 }
+
+struct TestBaseStruct {
+    virtual void TestFunc() = 0;
+};
+
+void testFunc(TestBaseStruct *obj) {
+    obj->TestFunc();
+}
+
+int main(int argc, char *argv[]) {
+    // BadClass *a = NULL;
+    // try {
+    //     BadClass *a = new(nothrow) BadClass;
+    // } catch (const std::exception &) { }
+
+    // operator delete(a, nothrow);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
