@@ -133,13 +133,22 @@ void print_modull(const C& v, ostream &os, int m) {
     for_each(begin(v), end(v), lambdaobj);
 }
 
-
-
-int main(int argc, char *argv[]) {
+void testlambda() {
     vector<int> testvec{1,2,3,4,5,6,7,8,9};
     print_modull(testvec,cout,2);
     print_modulf(testvec,cout,2);
     print_modulc(testvec,cout,2);
+}
+
+int main(int argc, char *argv[]) {
+    int testAA[3][3] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9}}; //这里数组间都插入了4个字节的缝隙，对齐到了16字节，不知道具体原因
+    int testPA1[] = {1, 2, 3};
+    int testPA2[] = {4, 5, 6};
+    int testPA3[] = {7, 8, 9};
+    int *testPA[] = { testPA1, testPA2, testPA3 };
+
+    testAA[1][2] = 100;
+    testPA[1][2] = 200;
 }
 
 
