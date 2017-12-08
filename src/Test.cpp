@@ -140,18 +140,30 @@ void testlambda() {
     print_modulc(testvec,cout,2);
 }
 
-int main(int argc, char *argv[]) {
-    int testAA[3][3] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9}}; //这里数组间都插入了4个字节的缝隙，对齐到了16字节，不知道具体原因
-    int testPA1[] = {1, 2, 3};
-    int testPA2[] = {4, 5, 6};
-    int testPA3[] = {7, 8, 9};
-    int *testPA[] = { testPA1, testPA2, testPA3 };
-
-    testAA[1][2] = 100;
-    testPA[1][2] = 200;
+int TestLambdaCapture(std::function<int(void)> &lambdaObj)
+{
+    int testval = 100;
+    std::function<void(void)> lambdaObj2 = [testval]() {
+        // error: cannot assign to a variable captured by copy in a non-mutable lambda
+        // testval = 200;
+    };
+    std::function<void(void)> lambdaObj1 = [testval]() mutable {
+        testval = 200;
+    };
+    lambdaObj = [&testval]() -> int {
+        return testval;
+    };
+    cout<<lambdaObj()<<endl;
+    return 0;
 }
 
+int main(int argc, char *argv[]) {
+    std::function<int(void)> lambdaObj;
+    TestLambdaCapture(lambdaObj);
+    cout<<lambdaObj()<<endl;
 
+    int (*testFunPtr)(int) = [](int a) -> int { return a; };
+}
 
 
 
