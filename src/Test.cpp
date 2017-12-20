@@ -133,7 +133,7 @@ void print_modull(const C& v, ostream &os, int m) {
     for_each(begin(v), end(v), lambdaobj);
 }
 
-void testlambda() {
+void testlambda1() {
     vector<int> testvec{1,2,3,4,5,6,7,8,9};
     print_modull(testvec,cout,2);
     print_modulf(testvec,cout,2);
@@ -157,12 +157,25 @@ int TestLambdaCapture(std::function<int(void)> &lambdaObj)
     return 0;
 }
 
-int main(int argc, char *argv[]) {
+int testlambda2() {
     std::function<int(void)> lambdaObj;
     TestLambdaCapture(lambdaObj);
     cout<<lambdaObj()<<endl;
 
     int (*testFunPtr)(int) = [](int a) -> int { return a; };
+}
+
+class TestLambdaThisCap {
+private:
+    int testa;
+public:
+    std::function<int(void)> testfunc() { return [this]()->int { return testa; };}
+};
+
+int main(int argc, char *argv[]) {
+    TestLambdaThisCap test;
+    std::function<int(void)> testl = test.testfunc();
+    int reval = testl(); //注意这里调用testl的时机不能超出test对象的生命周期，否则this为垂悬指针
 }
 
 
