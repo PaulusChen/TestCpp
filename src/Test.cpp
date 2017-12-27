@@ -202,21 +202,25 @@ class BaseClass2 {
     virtual void Hello() { cout << "hello baseclass2" << endl; }
 };
 
-class DivClass : public BaseClass2 {};
+class DerivedClass : public BaseClass2 {
+private:
+    int x;
+public:
+    virtual void Hello() { cout << "hello derived class x is " << x << endl; }
+};
 
 int main(int argc, char *argv[]) {
     double a = 100.123; int b = static_cast<int>(a);
     BaseClass2 c2;
     // BaseClass1 c1 = static_cast<BaseClass1>(c2); // error: no matching conversion for static_cast from 'BaseClass2' to 'BaseClass1'
-
     // BaseClass1 *pc1 = static_cast<BaseClass1 *>(&c2); // error: static_cast from 'BaseClass2 *' to 'BaseClass1 *', which are not related by inheritance, is not allowed
 
-    DivClass *pd1 = static_cast<DivClass *>(&c2);
-    DivClass *pd2 = dynamic_cast<DivClass *>(&c2); // error: 'BaseClass2' is not polymorphic
-
-    DivClass d3;
+    DerivedClass *pd1 = static_cast<DerivedClass *>(&c2);
+    DerivedClass *pd2 = dynamic_cast<DerivedClass *>(&c2); //如果不存在任何virtual函数则类似转换会报错 error: 'BaseClass2' is not polymorphic
+    DerivedClass d3;
     BaseClass2 *pb1 = &d3;
-    DivClass *pd3 = dynamic_cast<DivClass *>(pb1); 
-    DivClass *pd4 = dynamic_cast<DivClass *>(&c2); 
+    DerivedClass *pd3 = dynamic_cast<DerivedClass *>(pb1); 
+    DerivedClass *pd4 = dynamic_cast<DerivedClass *>(&c2); 
+    pd4->Hello();
 
 }
